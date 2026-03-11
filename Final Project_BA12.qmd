@@ -1,0 +1,472 @@
+---
+title: "Streaming Strategies: Analyzing Asian Content on Netflix and Amazon Prime during the COVID-19 Pandemic"
+author: "I-En Ho, Hazel Kaushik"
+date: today
+format:
+  dashboard:
+    theme: minty
+    embed-resources: true
+editor: visual
+---
+
+# Topical Overview {scrolling="true"}
+
+**1.1: Topical Overview**
+
+The global streaming industry changed significantly due to the COVID 19 pandemic. As movie theaters closed across the world, consumers flocked to digital platforms like Netflix and Amazon Prime Video. This intense competition, often called the streaming wars, drove these companies to rapidly expand their content libraries to capture diverse global audiences. According to research from Nielsen, specifically the report titled [COVID 19 Tracking the Impact on Media Consumption](https://www.nielsen.com/insights/2020/covid-19-tracking-the-impact-on-media-consumption/), this period saw a global surge in streaming and digital content engagement as people turned to these platforms for both information and entertainment during lockdowns.
+
+-   **Question 1: How does the distribution of movies versus TV shows compare across platforms for Asian content during the COVID 19 pandemic?**
+-   **Question 2: Is there a measurable trend in the addition of Asian content over time throughout the pandemic period?**
+-   **Question 3: Which genres are most prevalent in Asian content across both platforms during the COVID 19 pandemic?**
+
+We address these inquiries using the [Netflix Movies and TV Shows dataset](https://www.kaggle.com/datasets/shivamb/netflix-shows) and the [Amazon Prime Movies and TV Shows dataset](https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows). This analysis is important because streaming platforms serve as modern gatekeepers for cultural content. By examining the concentration of Asian titles, we can determine how corporate streaming strategies during a global crisis directly influenced cultural exposure for international audiences.
+
+When using these datasets, we must acknowledge inherent limitations and ethical considerations regarding data quality. Both the Netflix Movies and TV Shows dataset and the Amazon Prime Movies and TV Shows dataset contain missing entries, particularly within the director, cast, and country fields. The Amazon Prime data exhibits a higher rate of missingness in the country and date added fields, which could introduce bias by potentially underrepresenting content from smaller production markets. Furthermore, both datasets reflect a snapshot in time from 2021 and do not capture the real time updates that occur in streaming libraries. To ensure ethical and transparent analysis, we acknowledge these data gaps, avoid overstating our conclusions, and maintain clarity regarding sample size and quality constraints throughout our study.
+
+Netflix and Prime Video streaming
+
+![Credit: Lucas Gouveia / How To Geek \| Pixel Shot / Shutterstock](https://static0.howtogeekimages.com/wordpress/wp-content/uploads/2025/02/a-couple-watching-tv-with-the-netflix-and-prime-video-logos.jpg?q=70&fit=crop&w=1600&h=1100&dpr=1)
+
+# Data Context {scrolling="true"}
+
+**1.2: Data Context**
+
+To understand the scope of our analysis regarding Asian content trends during the COVID 19 pandemic, it is essential to examine the context of the data sources we selected. This section outlines the origin, collection methods, and limitations of each dataset to provide transparency for our research.
+
+## Row
+
+**Netflix Movies and TV Shows dataset**
+
+-   **Data Availability:** You can find more information and access the public dataset at this [Kaggle link](https://www.kaggle.com/datasets/shivamb/netflix-shows).
+
+-   **Dataset Creator:** The primary data was compiled by Flixable, which is an independent third party search engine for Netflix content.
+
+-   **Sample Description:** This dataset contains comprehensive metadata for movies and TV shows available on the Netflix platform. It was compiled using automated API calls and web crawling scripts that captured the actual catalog offerings as they appeared on the service in 2021. The collection includes 8,807 unique entries, each cataloged with specific attributes such as release year, genre, and production country. This data reflects a global snapshot of the library during the pandemic, allowing us to track cultural content distribution across various markets. A key benefit of this sample is the high quality of metadata for most entries, yet a notable shortcoming is the missing geographic data for certain entries, which could potentially bias our analysis regarding non Western regions.
+
+-   **Data Meaning:**
+
+    This dataset covers the titles, genres, and release years of movies and TV shows available on Netflix. Combining them with our other dataset is compelling because it allows us to track the specific surge in Asian content during the 2020 to 2021 COVID period across the two biggest competitors in the industry. This data represents a unique time when traditional cinema was replaced by digital streaming. We want to explore the geographic distribution of Asian content and determine if there was a significant shift in the variety of countries represented. While we expect a large volume of content from dominant markets such as India, we specifically want to see how the representation of other major markets like South Korea and Japan compares during the pandemic period.
+
+-   **Data Join:**
+
+    We are using a full join to stack the datasets as they both have the same columns. But we will be adding another column named platform, which basically would tell if the row or the title/data is from Netflix or Amazon. 
+
+-   **Data Observations:**
+
+    The Netflix dataset contains 8,807 rows and 12 columns. Below is a description of each column and how they support our research:
+
+    -   **show_id**: A unique identification number assigned to every movie or TV show.
+
+    -   **type**: Categorizes the content as either a "Movie" or a "TV Show," allowing us to compare format preferences across platforms.
+
+    -   **title**: The official name of the production.
+
+    -   **director**: Lists the directors for each title, which helps us identify frequent creators and production styles.
+
+    -   **cast**: Lists the lead actors involved to help us track talent trends in different regions.
+
+    -   **country**: Identifies the production origin, which is the **key feature** for our study of Asian markets.
+
+    -   **date_added**: Tracks when the content was added to the platform, showing growth trends over time.
+
+    -   **release_year**: The year the content was originally released (ranging from early years up to 2021).
+
+    -   **rating**: The audience rating (e.g., TV-MA, TV-14), providing context on target demographics.
+
+    -   **duration**: Lists the runtime for movies or the number of seasons for TV shows.
+
+    -   **listed_in**: Describes the genres and categories, which is essential for analyzing content diversity.
+
+    -   **description**: A short summary of the plot and themes of the show.
+
+-   **Data Issues:**
+
+    There are some missing values within the dataset, particularly in the “director,” “cast,” and occasionally “country” columns. The “date_added” column also has a small number of missing entries. These missing values do not significantly impact our research question because our primary variables of interest are country, release_year, and date_added. Also for the missing information, these datasets do not include internal viewership numbers because streaming companies keep that data private. However, we believe the metadata provided is already very fertile for a story about geographic diversity and content growth. We do not plan to add other datasets because the available features are sufficient to answer our core questions. We want to focus our energy on comparing these two massive platforms to see which one was more aggressive in expanding its Asian library during the global lockdown.
+
+## Row
+
+**Amazon Prime Movies and TV Shows dataset**
+
+-   **Data Availability:** You can find more information and access the public dataset at this [Kaggle link](https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows).
+
+-   **Dataset Creator:** The data was compiled by independent data contributors who gathered information from Wikipedia and FlixDatabase.
+
+-   **Sample Description:** This dataset captures the extensive catalog of content available on the Amazon Prime Video streaming platform. The data was generated through consistent API scraping methods conducted in 2021 to document the real world commercial media offerings available to subscribers. The sample comprises 9,668 distinct titles, providing a broad overview of the diverse content landscape on the platform. By recording content available in 2021, the dataset provides a necessary point of comparison for streaming strategies during the global health crisis. A significant benefit of this dataset is its sheer volume, yet a critical shortcoming is the high percentage of missing geographic metadata, which limits our ability to precisely track every specific production market across the globe.
+
+-   **Data Meaning:**
+
+    This dataset covers the titles, genres, and release years of movies and TV shows available on Amazon Prime Video. Combining it with our first dataset is compelling because it allows us to track the specific surge in Asian content during the 2020 to 2021 COVID period across the two biggest competitors in the industry. This data represents a unique time when traditional cinema was replaced by digital streaming. We want to explore the geographic distribution of Asian content and determine if there was a significant shift in the variety of countries represented. While we expect a large volume of content from dominant markets such as India, we specifically want to see how the representation of other major markets like South Korea and Japan compares during the pandemic period.
+
+-   **Data Join:**
+
+    To integrate this dataset with the Netflix dataset, we will add a “platform” column with variables like “Amazon” and “Netflix” and then stack the two datasets into one combined dataset for comparative analysis.
+
+-   **Data Observations:**
+
+    The Amazon Prime dataset contains 9,668 rows and 12 columns. Below is a description of each column and how they support our research:
+
+    -   **show_id**: A unique identification number assigned to every movie or TV show.
+
+    -   **type**: Categorizes the content as either a "Movie" or a "TV Show," allowing us to compare format preferences across platforms.
+
+    -   **title**: The official name of the production.
+
+    -   **director**: Lists the directors for each title, which helps us identify frequent creators and production styles.
+
+    -   **cast**: Lists the lead actors involved to help us track talent trends in different regions.
+
+    -   **country**: Identifies the production origin, which is the **key feature** for our study of Asian markets.
+
+    -   **date_added**: Tracks when the content was added to the platform, showing growth trends over time.
+
+    -   **release_year**: The year the content was originally released (ranging from early years up to 2021).
+
+    -   **rating**: The audience rating (e.g., TV-MA, TV-14), providing context on target demographics.
+
+    -   **duration**: Lists the runtime for movies or the number of seasons for TV shows.
+
+    -   **listed_in**: Describes the genres and categories, which is essential for analyzing content diversity.
+
+    -   **description**: A short summary of the plot and themes of the show.
+
+-   **Data Issues:**
+
+    Similar to the Netflix dataset, the Amazon Prime dataset contains missing values in columns such as “director,” “cast,” and occasionally “country.” There are also instances of multiple countries listed within one cell. These issues are common in scraped streaming metadata datasets and do not significantly reduce reliability for our research focus. Since our primary interest is in country and time trends, we can filter or clean the relevant fields without compromising the validity of our conclusions.
+
+# Group Information
+
+**1.3: Group Information**
+
+**Project Topic:** Our group explores global streaming trends by comparing the availability and diversity of Asian content on Netflix and Amazon Prime Video during the 2020 to 2021 pandemic period.
+
+## Row
+
+**I-En Ho** (The Information School, University of Washington; ienho\@uw.edu)
+
+-   **Topic Interest:** I am interested in how data visualization can effectively reveal cultural trends within streaming platform libraries.
+
+-   **Bio Interest:** My interest in informatics comes from wanting to bridge the gap between technical data analysis and human storytelling.
+
+## Row
+
+**Hazel Kaushik** (The Information School, University of Washington; hazelk3\@uw.edu)
+
+-   **Topic Interest:** I am passionate about Asian entertainment and the global trends that surround this rapidly expanding industry.
+
+-   **Bio Interest:** I am very interested in bringing design, data, and technology together to apply skills learned in various informatics classes to real world projects.
+
+# Join Data {scrolling="true"}
+
+**Data Wrangling and Preparation**
+
+We performed a join between the Netflix and Amazon Prime Video datasets. To ensure the combined dataset was meaningful and aligned with our research goal of studying Asian content during the pandemic, we executed several pre-processing steps before the merge.
+
+**Data Joining Process**
+
+Before joining, we made the following strategic adjustments to our data:
+
+-   **Filtered by Geography**: Restricted both datasets to specific Asian countries to isolate the target demographic.
+
+-   **Filtered by Time Period**: Kept only titles released in 2020 and 2021 to represent the COVID-19 era.
+
+-   **Added Platform Identifiers**: Mutated a new "platform" column for both sets to prevent data loss and allow for source comparison after the join.
+
+-   **Standardized Features**: Ensured that the common columns (like title, country, and type) were compatible for a successful full join.
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(DT)
+library(stringr)
+library(plotly)
+```
+
+```{r}
+#| message: false
+#| warning: false
+
+# Load the datasets
+amazon_titles <- read_csv("amazon_prime_titles.csv")
+netflix_titles <- read_csv("netflix_titles.csv")
+
+# 1. Define target Asian countries
+asia_list <- c("India", "Japan", "South Korea", "China", "Taiwan", "Thailand", 
+               "Afghanistan", "Hong Kong", "Iran", "Kazakhstan", "Malaysia", 
+               "Singapore", "United Arab Emirates", "Indonesia", "Philippines", 
+               "Vietnam", "Pakistan", "Turkey")
+
+# 2. Prepare Amazon data with platform label
+amazon_prepared <- amazon_titles |>
+  filter(country %in% asia_list) |>
+  filter(release_year == 2020 | release_year == 2021) |>
+  mutate(platform = "Amazon")
+
+# 3. Prepare Netflix data with platform label
+netflix_prepared <- netflix_titles |>
+  filter(country %in% asia_list) |>
+  filter(release_year == 2020 | release_year == 2021) |>
+  mutate(platform = "Netflix")
+
+# 4. Perform the Join
+combined_covid_asia <- full_join(amazon_prepared, netflix_prepared)
+
+# 5. Generate interactive table for the final report
+# This replaces glimpse() to provide a searchable and paginated view
+# glimpse(combined_covid_asia)
+# Added height = 'auto' to remove the excessive white space
+datatable(combined_covid_asia, 
+          caption = 'Joined Dataset: Asian Content during COVID 19',
+          options = list(pageLength = 10, scrollX = TRUE))
+```
+
+**Joined Data Observations**
+
+After completing the full join of the Netflix and Amazon datasets, we conducted a preliminary observation of the combined data to ensure its integrity and relevance to our research goal.
+
+-   **Total Number of Rows**: The joined dataset contains 312 rows, which represents all the unique Asian titles released during the pandemic period (2020-2021) that we filtered from both sources.
+
+-   **Column Names**: There are 13 columns in total. These include the original metadata such as show_id, type, title, director, cast, country, release_year, rating, duration, listed_in, and description.
+
+-   **New Identifiers**: We successfully included the platform column, which allows us to distinguish between content sourced from Amazon and Netflix.
+
+-   **Data Quality Note**: As observed in the glimpse output, the date_added column contains several NA (missing) values, particularly in the Amazon records. This confirms our need for the data cleaning performed in Section IV, where we rely on release_year for time-based analysis.
+
+**Potential Biases:\
+**One major limitation in our combined dataset that could arise is missing information, especially in the Amazon Prime data. A large percentage of the country and date_added fields are missing, which limits our ability to fully compare geographic growth between platforms. This may introduce bias because certain regions could be underrepresented simply due to missing metadata rather than actual lack of content. As a result, conclusions about which countries produced more content must be interpreted carefully.
+
+In terms of human rights principles, our dataset supports privacy since it contains only catalog metadata and no personal user data. It also supports transparency and explainability because the data is publicly available and we clearly document how it was cleaned and combined and if we make any changes to our strategy on how to use it to analyse. However, fairness and non-discrimination may be affected due to missing country data that could hide representation from smaller production regions. Professional responsibility and accountability require us to acknowledge these limitations and avoid overstating conclusions. We want to observe patterns or trends that we see in our sample data. By clearly communicating these constraints, we maintain responsible and ethical data analysis practices.
+
+# 3 Questions with Visualizations {scrolling="true"}
+
+## Row
+
+**Question 1: How does the distribution of movies versus TV shows compare across platforms for Asian content during the COVID-19 pandemic?**
+
+To evaluate the strategic distribution of movies versus TV shows within Asian content libraries during the COVID-19 pandemic, we analyzed the 'type' variable. We utilized a faceted bar chart to provide a clear, side-by-side comparison across platforms. This visualization allows us to identify whether platforms shifted their strategic focus toward feature-length films or episodic series, serving as a key indicator of how each service developed its regional library amidst the global health crisis.
+
+-   Visualization: Faceted Bar Chart
+
+-   Basic Tools Used: group_by, summarize, filter
+
+Note: We utilized facet_wrap as a standard layout tool to enhance readability for side by side comparisons.
+
+## Row {height="3%"}
+
+```{r}
+# Prepare the data summary
+# Group the dataset by platform and type to organize content categories
+# Calculate the total count of titles for each platform-type combination
+content_type_summary <- combined_covid_asia |>
+  group_by(platform, type) |>
+  summarize(count = n(), .groups = "drop")
+
+# Initialize the ggplot object
+# Map content type to the x-axis and count to the y-axis
+# Fill bars with different colors based on the type
+content_format_plot <- ggplot(content_type_summary, 
+                              aes(x = type, y = count, fill = type,
+                                  text = paste("Platform:", platform, 
+                                               "<br>Type:", type, 
+                                               "<br>Count:", count))) +
+  # Create column charts to visualize volume
+  geom_col() +
+  # Split the plot into separate panels by platform for direct comparison
+  facet_wrap(~platform) + 
+  # Add titles and labels for clarity and context
+  labs(title = "Asian Content Format Distribution (2020-2021)",
+       subtitle = "Comparing volume of Movies vs TV Shows by platform",
+       x = "Content Type",
+       y = "Count of Titles",
+       fill = "Content Type") +
+  # Apply a clean, academic-style theme
+  theme_minimal()
+
+# Convert to interactive plot
+ggplotly(content_format_plot, tooltip = "text")
+```
+
+**Insight:** During the COVID-19 pandemic, the faceted bar chart illustrates the strategic composition of Asian content libraries across both platforms. Netflix maintains a larger total volume of titles compared to Amazon Prime. Regarding content format, both platforms demonstrate a strong preference for movies over television series, which suggests that film acquisition was a primary driver for their Asian content strategy during the pandemic. This visualization helps us determine that during this global health crisis, both platforms prioritized film as a major component of their regional content expansion, rather than focusing on episodic series development.
+
+**Data Limitation Note:** The comparison of library size is significantly affected by missing geographic metadata in the Amazon Prime dataset. Approximately 93% of the Amazon records lack a country value, which means we cannot classify the vast majority of the library as Asian content. Consequently, the visualization likely underestimates the actual volume of Amazon content available in this region. This disparity between the two platforms should be interpreted as a limitation of the available metadata rather than a direct reflection of the actual content distribution.
+
+## Row
+
+**Question 2: Is there a measurable trend in the market share of Asian content over time throughout the pandemic period?**
+
+We wanted to determine if there was a measurable shift in Asian content market share between Netflix and Amazon Prime throughout the pandemic years. We initially intended to map the release schedule over time using the date added column. However, due to significant missingness in that dataset within Amazon Prime, a continuous time series analysis was unreliable. Therefore, we shifted our analytical lens to the release year variable. This provided a consistent and reliable measure across both platforms to compare their annual content distribution during 2020 and 2021.
+
+-   Visualization: Slope Chart
+
+-   Basic Tools Used: filter, mutate, summarize
+
+## Row {height="3%"}
+
+```{r}
+# Prepare the data summary
+# Filter records for the pandemic years of 2020 and 2021
+# Group data by year and platform to aggregate counts
+# Calculate the percentage share for each platform per year
+yearly_proportions <- combined_covid_asia |>
+  filter(release_year %in% c(2020, 2021)) |>
+  group_by(release_year, platform) |>
+  summarize(count = n(), .groups = "drop") |>
+  group_by(release_year) |>
+  mutate(proportion = count / sum(count))
+
+# Initialize the slope chart
+# Map the release year to the x axis and proportion to the y axis
+# Group by platform to ensure lines connect correctly
+market_share_plot <- ggplot(yearly_proportions, 
+                            aes(x = factor(release_year), y = proportion,
+                                group = platform, color = platform, 
+                                text = paste("Year:", release_year, 
+                                             "<br>Platform:", platform, 
+                                             "<br>Proportion:", 
+                                             scales::percent(proportion)))) +
+  # Draw lines to connect data points between years
+  geom_line(size = 1) +
+  # Add points to emphasize the specific data values for each year
+  geom_point(size = 3) +
+  # Format the y axis to display values as percentages
+  scale_y_continuous(labels = scales::percent) +
+  # Add titles and labels for professional context
+  labs(title = "Share of Asian Content (2020 vs 2021)",
+       subtitle = "Comparing platform content share within the Asian market",
+       x = "Year",
+       y = "Proportion of Total Asian Content",
+       color = "Platform") +
+  # Apply a clean theme for academic presentation
+  theme_minimal()
+
+# Convert to interactive plot
+ggplotly(market_share_plot, tooltip = "text")
+```
+
+**Insight:** The slope chart visualizes the relative market share of Asian content released in 2020 and 2021. Netflix holds the majority share of the Asian content market for both years. However, a closer look at the data reveals a subtle shift in market share. Netflix experienced a slight decline in its relative proportion, whereas Amazon Prime showed a modest increase during the same period. This trend suggests that while Netflix remains the dominant platform, Amazon Prime intensified its focus on Asian content in 2021, narrowing the gap with its competitor during the pandemic years.
+
+**Data Limitation Note:** We utilized the release year variable as the primary temporal metric for this pandemic period analysis. Ideally, the date added column would track a platform's acquisition strategy, but the significant missing values in the Amazon Prime dataset rendered that column unreliable. By using the release year, we provide a consistent and reliable measure of platform activity during 2020 and 2021. This approach allows for a stable cross platform comparison of market share, circumventing the data gaps inherent in the acquisition metadata.
+
+## Row
+
+**Question 3: Which genres are most prevalent in Asian content across both platforms during the COVID 19 pandemic?**
+
+To perform an accurate genre analysis, we needed to address the structure of the listed_in column, which contains multiple genres separated by commas. Isolating these individual genres was essential to prevent multi-genre titles from being counted as unique, unanalyzable categories, which would have skewed our understanding of genre popularity. Visualization: Heatmap (New Visualization Type)
+
+-   Tool used (Novel: New Visualization Type): Heatmap
+
+    -   Benefit: A heatmap allows us to visualize the density of genre distributions across multiple categories simultaneously. This is more useful than a standard bar plot because it highlights frequency intensity with color gradients, enabling us to spot patterns that would be cluttered in a bar chart.
+
+-   Tool used (Novel: String Extraction): separate_rows
+
+    -   Benefit: This tool isolates individual genres from comma separated strings. Without this, a title listed as "Drama, Action" would be counted as one unique category, making it impossible to count the frequency of "Drama" and "Action" individually.
+
+-   Tool used (Intermediate: Conditional Transformation): case_when
+
+    -   Why: We needed to standardize genre names like "Drama" and "Dramas" into a single category for accurate counting.
+
+    -   Alternative: Without this, we would have had to use multiple nested if_else() statements, which is less efficient and more error prone.
+
+-   Basic Tools Used: group_by, summarize, mutate
+
+## Row {height="3%"}
+
+```{r}
+# Basic tools used: group_by, summarize
+genre_analysis <- combined_covid_asia |>
+  separate_rows(listed_in, sep = ", ") |>
+  # Trim leading and trailing whitespace
+  mutate(listed_in = str_trim(listed_in)) |>
+  mutate(listed_in = case_when(
+    # Use | to represent OR and specify both singular and plural forms
+    str_detect(listed_in, "Drama|Dramas") ~ "Drama",
+    str_detect(listed_in, "Comedy|Comedies") ~ "Comedy",
+    str_detect(listed_in, "Documentary|Documentaries") ~ "Documentary",
+    str_detect(listed_in, "Thriller|Thrillers") ~ "Thriller",
+    # Keep the original name if no condition is matched
+    TRUE ~ listed_in
+  )) |>
+  group_by(platform, listed_in) |>
+  summarize(count = n(), .groups = "drop")
+
+genre_heatmap_plot <- ggplot(genre_analysis, 
+                             aes(x = platform, y = listed_in, fill = count,
+                                 text = paste("Genre:", listed_in, 
+                                              "<br>Platform:", platform, 
+                                              "<br>Frequency:", count))) +
+  geom_tile() +
+  scale_fill_gradient(low = "skyblue", high = "darkblue") +
+  labs(title = "Heatmap of Asian Content Genres (2020-2021)",
+       subtitle = "Comparing genre popularity by platform",
+       x = "Streaming Platform",
+       y = "Genre",
+       fill = "Frequency") +
+  theme(axis.text.y = element_text(size = 6))
+
+# Convert to interactive plot
+ggplotly(genre_heatmap_plot, tooltip = "text", height = 700)
+```
+
+**Insight:** The heatmap provides a comparative view of genre distribution between Netflix and Amazon Prime. Through our genre standardization process, we merged singular and plural forms of content types to ensure accurate frequency counts across the entire library. Netflix displays high concentrations in categories such as Drama and International Movies, which indicates a strategic focus on narrative driven content. In contrast, Amazon Prime shows significantly lower density across all categories. This visualization helps us identify that while both platforms contain diverse content, Netflix utilizes a more structured taxonomy for their Asian content library, whereas Amazon Prime appears to offer a different selection profile within the available data.
+
+**Data Limitation Note:** The interpretation of this heatmap is heavily influenced by the previously identified issue with missing geographic metadata in the Amazon Prime dataset. Since 93 percent of the Amazon records lack a country value, our filter for Asian content excluded the majority of its library. Consequently, the low density observed in the Amazon Prime genre heatmap does not necessarily reflect an actual lack of genre diversity, but rather a severe reduction in sample size due to missing metadata. This serves as an important reminder that genre analysis is only as reliable as the underlying categorical and geographic data.
+
+# Coding Notes {scrolling="true"}
+
+## Row
+
+-   **Tool: `facet_wrap()`**
+
+    -   **Problem Solved**: We needed to generate side by side plots for Netflix and Amazon Prime. Standard plotting functions covered in class only support creating a single chart, which makes comparative analysis between platforms difficult. This tool allows us to split the dataset by platform and create intuitive, comparative visuals.
+
+    -   **Learning Process**: We learned this tool by reviewing the `ggplot2` documentation and following online tutorials regarding data visualization with the tidyverse.
+
+## Row
+
+-   **Tool: `theme_minimal()`**
+
+    -   **Problem Solved**: We needed an academic, clean aesthetic for our reports. The default themes in `ggplot2` often include grey backgrounds and grid lines that distract from the data. This tool simplifies the appearance, allowing the audience to focus on the key findings.
+
+    -   **Learning Process**: We discovered this function while searching for ways to improve the professional presentation of our figures on RStudio support websites.
+
+## Row
+
+-   **Tool: `str_trim()` and `str_detect()`**
+
+    -   **Problem Solved**: We needed to clean and identify patterns in character strings. Base R functions for string manipulation are often less intuitive and harder to read. These `stringr` functions provide a consistent and readable way to remove whitespace and detect patterns like singular or plural forms of content.
+
+    -   **Learning Process**: We learned these tools by reading the string manipulation chapters in the R for Data Science textbook and referencing the `stringr` package cheat sheet.
+
+## Row
+
+-   **Tool: `scale_fill_gradient()`**
+
+    -   **Problem Solved**: In our heatmap, the default color scales failed to clearly distinguish frequency intensity. We needed a custom color palette to highlight the density of content types. This function allows us to define specific color gradients that make high and low frequencies easier to interpret.
+
+    -   **Learning Process**: We learned this through the `ggplot2` reference guide, which explains how to map continuous variables to custom color ranges for better data visualization.
+
+## Row
+
+-   **Tool: datatable() from the DT package**
+
+    -   **Problem Solved**: We needed a way to present our large joined dataset without cluttering the final report. Standard R outputs display data in a static format that is difficult to navigate and takes up too much vertical space. This tool created an interactive, searchable, and paginated table, allowing the audience to explore the data efficiently without leaving the dashboard.
+
+    -   **Learning Process**: We discovered this tool while researching professional data dashboards for Quarto. We consulted the `DT` package documentation to implement features like horizontal scrolling (`scrollX`) and custom page lengths to ensure the table fit perfectly within our report layout.Row
+
+## Row
+
+-   **Statement of AI Usage**
+
+    -   We utilized Google Gemini as a writing assistant to help refine our grammar, improve clarity, and ensure our report structure adhered to professional academic standards. All data analysis, coding logic, and conclusions presented in this report are original work authored by our team.
+
+# **Conclusion and Summary Takeaways** {scrolling="true"}
+
+**III: Conclusion and Summary Takeaways**
+
+Our project reveals three primary takeaways regarding Asian content strategies during the COVID 19 pandemic. First, both Netflix and Amazon Prime prioritized feature length films over episodic series, indicating that movie acquisition was the primary driver for regional library growth during this global health crisis. Second, the slope chart analysis confirms Netflix retains majority market share, though Amazon Prime began narrowing the gap in 2021. Third, our genre analysis demonstrates that Netflix maintains a more structured and diverse Asian content taxonomy, whereas the Amazon Prime dataset exhibits lower density and variety in its genre classification. On a more broader perspective, we found that the Drama genre is quiet popular on both the platforms but also for both types of content which is movies and TV shows.
+
+We must conclude that our data exploration is underestimating the true volume of Asian content, especially for Amazon Prime. Due to missing geographic metadata in 93 percent of the Amazon records, our Asian content filter was overly restrictive. Consequently, our findings are an underestimate of the actual library size and diversity available in this region, serving more as a limitation of the current metadata than a complete reflection of the industry. But we did get an opportunity to find the start point on where we could explore next and in what directions. We must also acknowledge that there are certain permission restrictions on content depending on the region, making the statistics vastly different in specific places.
+
+Future research should prioritize improving data quality through more advanced imputation methods to address these metadata gaps, building on the techniques we explored for handling missing values. We could also improve the analysis by joining our current datasets with external reference files that map content titles to specific geographic locations, utilizing the join techniques covered in our course. Additionally, incorporating data from other streaming services would provide a broader industry context, allowing us to determine if our observed trends are unique to Netflix and Amazon or representative of a wider shift in the streaming landscape.
